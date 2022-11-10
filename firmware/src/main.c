@@ -38,8 +38,6 @@ extern void vApplicationTickHook(void);
 extern void vApplicationMallocFailedHook(void);
 extern void xPortSysTickHandler(void);
 
-// TimerHandle_t xTimer;
-
 QueueHandle_t xQueueAFEC;
 
 QueueHandle_t xQueueRGB;
@@ -82,21 +80,12 @@ static void AFEC_pot_callback(void) {
   xQueueSendFromISR(xQueueAFEC, &adc, &xHigherPriorityTaskWoken);
 }
 
-// void vTimerCallback(TimerHandle_t xTimer) {
-//   /* Selecina canal e inicializa conversão */
-//   afec_channel_enable(AFEC_POT, AFEC_POT_CHANNEL);
-//   afec_start_software_conversion(AFEC_POT);
-// }
-
 void RTT_Handler(void) {
-	// printf("Estorou\n");
 	uint32_t ul_status;
 	ul_status = rtt_get_status(RTT);
 
 	/* IRQ due to Alarm */
 	if ((ul_status & RTT_SR_ALMS) == RTT_SR_ALMS) {
-		// BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-		// xSemaphoreGiveFromISR(xSemaphoreRTT, &xHigherPriorityTaskWoken);
 		afec_channel_enable(AFEC_POT, AFEC_POT_CHANNEL);
 		afec_start_software_conversion(AFEC_POT);
 		RTT_init(1000, 100, RTT_MR_ALMIEN);
@@ -139,8 +128,6 @@ static void task_led(void *pvParameters) {
 }
 
 static void task_afec(void *pvParameters) {
-
-	printf("Task afec\n");
 
 	config_AFEC_pot(AFEC_POT, AFEC_POT_ID, AFEC_POT_CHANNEL, AFEC_pot_callback);
 
